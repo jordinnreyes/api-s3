@@ -4,6 +4,7 @@ service: api-s3
 provider:
   name: aws
   runtime: python3.12	
+  stage: ${opt:stage, 'dev'}
   # Default memory size for functions (default: 256MB)
   memorySize: 256
   timeout: 30
@@ -16,7 +17,7 @@ functions:
     memorySize: 512
     events:
       - http:
-          path: /s3/lista-buckets
+          path: /${self:provider.stage}/s3/lista-buckets
           method: get
           cors: true
           integration: lambda
@@ -24,7 +25,7 @@ functions:
     handler: lista_objetos_bucket.lambda_handler
     events:
       - http:
-          path: /s3/bucket/lista-objetos
+          path: /${self:provider.stage}/s3/bucket/lista-objetos
           method: post
           cors: true
           integration: lambda
@@ -33,7 +34,7 @@ functions:
     memorySize: 512
     events:
       - http:
-          path: /s3/bucket/create-bucket
+          path: /${self:provider.stage}/s3/bucket/create-bucket
           method: post
           cors: true
           integration: lambda
@@ -43,7 +44,17 @@ functions:
     memorySize: 512
     events:
       - http:
-          path: /s3/bucket/create-directory-bucket
+          path: /${self:provider.stage}/s3/bucket/create-directory-bucket
+          method: post
+          cors: true
+          integration: lambda
+
+  upload_archive_bucket:
+    handler: upload_archive_bucket.lambda_handler
+    memorySize: 512
+    events:
+      - http:
+          path: /${self:provider.stage}/s3/bucket/upload-file
           method: post
           cors: true
           integration: lambda
